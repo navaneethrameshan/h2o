@@ -92,7 +92,7 @@ static void on_read(h2o_socket_t *sock, const char *err)
 
 static void init_async(h2o_multithread_queue_t *queue, h2o_loop_t *loop)
 {
-#if defined(__linux__)
+#if !defined(__linux__)
     /**
      * The kernel overhead of an eventfd file descriptor is
      * much lower than that of a pipe, and only one file descriptor is required
@@ -159,7 +159,7 @@ void h2o_multithread_destroy_queue(h2o_multithread_queue_t *queue)
 #else
     h2o_socket_read_stop(queue->async.read);
     h2o_socket_close(queue->async.read);
-#ifndef __linux__
+#ifdef __linux__
     /* only one file descriptor is required for eventfd and already closed by h2o_socket_close() */
     close(queue->async.write);
 #endif
